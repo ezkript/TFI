@@ -46,7 +46,7 @@ int main(){
     // SetConsoleOutputCP(1252);
     leer = fopen("Usuarios.dat", "rb");
     if(leer==NULL){
-        cout << "Bienvenido a la aplicación para gestionar su gimnasio. \nComo es su primer ingreso, es necesario crear una cuenta de administrador: " << endl << endl;
+        cout << "Bienvenido a la aplicacion para gestionar su gimnasio. \nComo es su primer ingreso, es necesario crear una cuenta de administrador: " << endl << endl;
         usuario=registrarAdmin(escribir, usuario);
         fclose(leer);
     } else {
@@ -56,12 +56,15 @@ int main(){
     do
     {
         cout << "Bienvenid@ " << (strlen(usuario.apYNom)<1 ? "administrador" : usuario.apYNom) << "." << endl
-        << "1. Iniciar sesión." << endl
-        << "2. Registrar usuario de Recepción." << endl
-        << "3. Registrar actividades del gym. - TEMPORAL LISTAR" << endl
+        << "-----------------------------------------------" << endl
+        << "1. Iniciar sesion." << endl
+        << "2. Registrar usuario de Recepcion." << endl
+        << "3. Registrar actividades del gym." << endl
         << "4. Entrenador con mayor carga horaria." << endl
-        << "5. Atrás." << endl << endl
-        << "Ingresar una opción: ";cin >> respuesta;
+        << "5. Listar." << endl 
+        << "6. Salir. " << endl
+        << "-----------------------------------------------" << endl
+        << "Ingresar una opcion: ";cin >> respuesta;
         system("CLS");
 
         switch (respuesta){
@@ -72,7 +75,7 @@ int main(){
             if(usuario.tipo==2){
                 registrar(escribir, leer, entrenador, usuario);
             } else {
-                cout << "No hay ninguna sesión de administrador activa." << endl; 
+                cout << "No hay ninguna sesion de administrador activa." << endl; 
             }
             break;
         case 3:
@@ -98,7 +101,8 @@ int main(){
 void listar(FILE* fp, struct entrenadores entrenador, struct usuarios usuario) {
     fp = fopen("Usuarios.dat", "rb");
     if(fp!=NULL){
-        cout << "USUARIOS: " << endl << endl;
+        cout << "USUARIOS: " << endl 
+        << "----------------------------------------------" << endl;
         fread(&usuario, sizeof(usuarios), 1, fp);
         while (!feof(fp)) {
             cout << "Nombre: " << usuario.usuario << endl
@@ -112,7 +116,8 @@ void listar(FILE* fp, struct entrenadores entrenador, struct usuarios usuario) {
         cout << "No hay ningún usuario cargado aún." << endl << endl;
     }
     
-    cout << "ENTRENADORES" << endl << endl;
+    cout << "ENTRENADORES" << endl
+    << "----------------------------------------------" << endl;
 
     fp = fopen("Entrenadores.dat", "rb");
     if(fp!=NULL){
@@ -133,7 +138,7 @@ void listar(FILE* fp, struct entrenadores entrenador, struct usuarios usuario) {
 
         cout << endl;
     } else {
-        cout << "No hay ningún entrenador registrado aún." << endl << endl;
+        cout << "No hay ningun entrenador registrado aun." << endl << endl;
     }
     fclose(fp);
     Limpiar();
@@ -160,7 +165,7 @@ void login(FILE* fp, struct entrenadores &entrenador, struct usuarios &usuario, 
         cout << "Ingresar nombre de usuario: ";
         fflush(stdin);
         cin.getline(nombreUsuario, 100, '\n');
-        cout << "Ingresar contraseña: ";
+        cout << "Ingresar contrasenia: ";
         fflush(stdin);
         cin.getline(contrasenia, 32, '\n');
 
@@ -178,10 +183,10 @@ void login(FILE* fp, struct entrenadores &entrenador, struct usuarios &usuario, 
 
         fclose(fp);
         if (sesion) {
-            cout << "Sesión iniciada." << endl;
+            cout << "Sesion iniciada." << endl;
         }
         else {
-            cout << "Error de autenticación." << endl;
+            cout << "Error de autenticacion." << endl;
         }
         Limpiar();
         break;
@@ -190,7 +195,7 @@ void login(FILE* fp, struct entrenadores &entrenador, struct usuarios &usuario, 
 
         cout << "Ingresar legajo: ";
         cin >> legajo;
-        cout << "Ingresar contraseña: ";
+        cout << "Ingresar contrasenia: ";
         fflush(stdin);
         cin.getline(contrasenia, 32, '\n');
 
@@ -208,10 +213,10 @@ void login(FILE* fp, struct entrenadores &entrenador, struct usuarios &usuario, 
 
         fclose(fp);
         if (sesion) {
-            cout << "Sesión iniciada." << endl;
+            cout << "Sesion iniciada." << endl;
         }
         else {
-            cout << "Error de autenticación." << endl;
+            cout << "Error de autenticacion." << endl;
         }
         Limpiar();
         break;
@@ -239,8 +244,10 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
     struct entrenadores entrenador2;
 
     cout << "REGISTRAR" << endl
+        << "-------------------" << endl
         << "1. USUARIO" << endl
         << "2. ENTRENADOR" << endl
+        << "-------------------" << endl
         << "Respuesta: "; cin >> respuesta;
 
     cout << endl;
@@ -266,18 +273,18 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             fflush(stdin);
             cin.getline(usuario.usuario, 100, '\n');
             if (!validUser(usuario.usuario) || !repetition(fp, usuario.usuario, usuario)) {
-                cout << "Usuario inválido." << endl;
+                cout << "Usuario invalido." << endl;
             }
         } while (!validUser(usuario.usuario) || !repetition(fp, usuario.usuario, usuario));
 
         cout << endl;
 
         do {
-            cout << "Ingresar contraseña: ";
+            cout << "Ingresar contrasenia: ";
             fflush(stdin);
             cin.getline(usuario.contrasenia, 32, '\n');
             if (!validPass(usuario.contrasenia)) {
-                cout << "Contraseña no válida" << endl;
+                cout << "Contrasenia no valida" << endl;
             }
         } while (!validPass(usuario.contrasenia));
 
@@ -288,7 +295,7 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             fflush(stdin);
             cin.getline(usuario.apYNom, 60, '\n');
             if (!validName(usuario.apYNom)) {
-                cout << "Nombre no válido." << endl;
+                cout << "Nombre no valido." << endl;
             }
         } while (!validName(usuario.apYNom));
 
@@ -313,14 +320,14 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
 
         cout << endl;
 
-        cout << "Cantidad de días de trabajo: "; cin >> cantDias;
+        cout << "Cantidad de dias de trabajo: "; cin >> cantDias;
         for (int i = 0; i < (sizeof(entrenador.dias) / sizeof(entrenador.dias[0])); i++) {
             if (i < cantDias) {
                 do {
                     cout << "Ingresar dia" << i + 1 << ": "; fflush(stdin);
                     cin.getline(entrenador.dias[i], 10, '\n');
                     if (!validName(entrenador.dias[i])) {
-                        cout << "El día ingresado no es correcto." << endl;
+                        cout << "El dia ingresado no es correcto." << endl;
                     }
                 } while (!validName(entrenador.dias[i]));
             }
@@ -332,11 +339,11 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
         cout << endl;
 
         do {
-            cout << "Ingresar contraseña: ";
+            cout << "Ingresar contrasenia: ";
             fflush(stdin);
             cin.getline(entrenador.contrasenia, 32, '\n');
             if (!validPass(entrenador.contrasenia)) {
-                cout << "La contraseña es inválida." << endl;
+                cout << "La contrasenia es invalida." << endl;
             }
             else {
                 break;
@@ -365,7 +372,7 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
         Limpiar();
         break;
     default:
-        cout << "La opción no existe." << endl;
+        cout << "La opcion no existe." << endl;
         break;
     }
 }
@@ -568,16 +575,16 @@ usuarios registrarAdmin(FILE *fp, struct usuarios usuario){
         fflush(stdin);
         cin.getline(usuario.usuario, 100, '\n');
         if (!validUser(usuario.usuario) || !repetition(fp, usuario.usuario, usuario)) {
-            cout << "Usuario inválido." << endl;
+            cout << "Usuario invalido." << endl;
         }
     } while (!validUser(usuario.usuario) || !repetition(fp, usuario.usuario, usuario));
     cout << endl;
     do {
-        cout << "Ingresar contraseña: ";
+        cout << "Ingresar contrasenia: ";
         fflush(stdin);
         cin.getline(usuario.contrasenia, 32, '\n');
         if (!validPass(usuario.contrasenia)) {
-            cout << "Contraseña no válida" << endl;
+            cout << "Contrasenia no valida" << endl;
         }
     } while (!validPass(usuario.contrasenia));
     cout << endl;
@@ -586,7 +593,7 @@ usuarios registrarAdmin(FILE *fp, struct usuarios usuario){
         fflush(stdin);
         cin.getline(usuario.apYNom, 60, '\n');
         if (!validName(usuario.apYNom)) {
-            cout << "Nombre no válido." << endl;
+            cout << "Nombre no valido." << endl;
         }
     } while (!validName(usuario.apYNom));
     cout << endl;
