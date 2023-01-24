@@ -9,6 +9,12 @@ using namespace std;
 
 typedef char Dia[10];
 
+struct Actividades {
+    char NombreAct[100];
+    char Horario[50];
+    char entrenadorEncargado[100];
+};
+
 struct usuarios {
     char usuario[100];
     char contrasenia[32];
@@ -25,19 +31,23 @@ struct entrenadores {
 
 void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usuarios usuario);
 void login(FILE* fp, struct entrenadores &entrenador, struct usuarios &usuario, int respuesta);
-void listar(FILE* fp, struct entrenadores entrenador, struct usuarios usuario);
+void listar(FILE* fp, struct entrenadores entrenador, struct usuarios usuario, struct Actividades actividad);
 bool validPass(char contrasenia[32]);
 bool validUser(char user[100]);
 bool validName(char name[60]);
 bool repetition(FILE* fp, char user[100], struct usuarios usuario);
 void Limpiar();
 usuarios registrarAdmin(FILE *fp, struct usuarios usuario);
+void registrarActividad(FILE *fp, Actividades actividad);
+bool validTrainer(char actividad[100], char horario[50]);
+bool validHourFormat(char hora[50]);
 
 int main(){
     FILE *escribir,
         *leer;
     usuarios usuario;
     entrenadores entrenador;
+    Actividades actividad;
     int respuesta;
     // //Establece el idioma a español 
     // setlocale(LC_ALL, "spanish");
@@ -61,7 +71,7 @@ int main(){
         << "2. Registrar usuario de Recepcion." << endl
         << "3. Registrar actividades del gym." << endl
         << "4. Entrenador con mayor carga horaria." << endl
-        << "5. Listar." << endl 
+        << "5. Listar usuarios y actividades." << endl 
         << "6. Salir. " << endl
         << "-----------------------------------------------" << endl
         << "Ingresar una opcion: ";cin >> respuesta;
@@ -79,26 +89,125 @@ int main(){
             }
             break;
         case 3:
-            listar(escribir, entrenador, usuario);
+            if(usuario.tipo==2){
+                registrarActividad(escribir, actividad);
+            } else {
+                cout << "No hay ninguna sesion de administrador activa." << endl;
+            }
+            break;
+        case 5:
+            listar(escribir, entrenador, usuario, actividad);
         break;
+        case 6:
+            break;
         default:
             break;
         }
-    } while (respuesta!=5);
+    } while (respuesta!=6);
     
     return 0;
 }
 
+void registrarActividad(FILE *fp, Actividades actividad){
+    fp=fopen("Actividades.dat", "ab");
+    if(fp!=NULL){
+        cout << "REGISTRAR ACTIVIDADES" << endl
+        << "-------------------------------------------" << endl
+        << "Nombre de la actividad: "; 
+        fflush(stdin); 
+        cin.getline(actividad.NombreAct, 100, '\n');
+
+        do{
+            cout << "Horario de la actividad(FORMATO: HH:MM): ";
+            fflush(stdin);
+            cin.getline(actividad.Horario, 50, '\n');
+            if(!validHourFormat(actividad.Horario)){
+                cout << "El formato ingresado no es valido." << endl;
+            }
+        } while(!validHourFormat(actividad.Horario));
+        
+        do {
+            cout << "Nombre del entrenador encargado: "; fflush(stdin); cin.getline(actividad.entrenadorEncargado, 100, '\n');
+            if(!validTrainer(actividad.entrenadorEncargado, actividad.Horario)){
+                cout << "Error: el entrenador no esta disponible o no esta registado." << endl;
+            }
+        } while (!validTrainer(actividad.entrenadorEncargado, actividad.Horario));
+        
+        fwrite(&actividad, sizeof(Actividades), 1, fp);
+        fclose(fp);
+        cout << "Actividad registrada correctamente." << endl;
+    } else {
+        cout << "Ha ocurrido un error." << endl;
+    }
+    Limpiar();
+}
+
+bool validTrainer(char entrenador[100], char horario[50]){
+    FILE *fp;
+    Actividades actividad;
+    entrenadores entrenador2;
+    int flag=0;
+
+    fp=fopen("Entrenadores.dat", "rb");
+    if(fp!=NULL){
+        fread(&entrenador2, sizeof(entrenadores), 1, fp);
+
+        while(!feof(fp)){
+            if(strcmp(entrenador2.apYNom, entrenador)==0){
+                flag=1;
+            }
+            fread(&entrenador2, sizeof(entrenadores), 1, fp);
+        }
+
+        if(flag==0){
+            fclose(fp);
+            return false;
+        }
+    } else {
+        return false;
+    }
+    fclose(fp);
+
+    fp=fopen("Actividades.dat", "rb");
+    if(fp==NULL){
+        return true;
+    } else {
+        fread(&actividad, sizeof(Actividades), 1, fp);
+        while(!feof(fp)){
+            if(strcmp(entrenador,actividad.entrenadorEncargado)==0 && strcmp(horario, actividad.Horario)==0){
+                fclose(fp);
+                return false;
+            }
+            fread(&actividad, sizeof(Actividades), 1, fp);
+        }
+    }
+    fclose(fp);
+
+    return true;
+}
+
+bool validHourFormat(char hora[50]){
+    if(strlen(hora)>5) return false;
+
+    if (isdigit(int(hora[0])) && 
+        isdigit(int(hora[1])) && 
+        int(hora[2])==58 && 
+        isdigit(int(hora[3])) && 
+        isdigit(int(hora[4]))) return false;
+
+    return true;
+}
 
 /**
  * Nombre: listar()
  * @param fp Puntero.
  * @param usuario Estructura del usuario.
  * @param entrenador Estructura del entrenador.
+ * @param actividad Estructura de la actividad.
  * Tipo: sin tipo.
  * Descripcion: Permite visualizar los usuarios registrados.
 */
-void listar(FILE* fp, struct entrenadores entrenador, struct usuarios usuario) {
+void listar(FILE* fp, struct entrenadores entrenador, struct usuarios usuario, struct Actividades actividad) {
     fp = fopen("Usuarios.dat", "rb");
     if(fp!=NULL){
         cout << "USUARIOS: " << endl 
@@ -141,6 +250,24 @@ void listar(FILE* fp, struct entrenadores entrenador, struct usuarios usuario) {
         cout << "No hay ningun entrenador registrado aun." << endl << endl;
     }
     fclose(fp);
+    
+    cout << "ACTIVIDADES" << endl
+    << "----------------------------------------------" << endl;
+
+    fp=fopen("Actividades.dat", "rb");
+    if(fp!=NULL){
+        fread(&actividad, sizeof(Actividades), 1, fp);
+        while(!feof(fp)){
+            cout << "Actividad: " << actividad.NombreAct << endl
+            << "Horario: " << actividad.Horario << endl
+            << "Entrenador: " << actividad.entrenadorEncargado << endl << endl;
+            fread(&actividad, sizeof(Actividades), 1, fp);
+        }
+    } else {
+        cout << "No hay actividades registradas." << endl;
+    }
+    fclose(fp);
+
     Limpiar();
 }
 /**
