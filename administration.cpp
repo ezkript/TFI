@@ -1,3 +1,9 @@
+/*
+TO-DO: 
+ *Probar funcionalidad: calcular paga a entrenadores.
+ *Agregar funcionalidad: Entrenador con mayor carga horaria.
+*/
+
 #include <locale.h>
 #include <windows.h>
 #include <iostream>
@@ -41,6 +47,7 @@ usuarios registrarAdmin(FILE *fp, struct usuarios usuario);
 void registrarActividad(FILE *fp, Actividades actividad);
 bool validTrainer(char actividad[100], char horario[50]);
 bool validHourFormat(char hora[50]);
+void calcularPago(entrenadores entrenador);
 
 int main(){
     FILE *escribir,
@@ -58,6 +65,7 @@ int main(){
     if(leer==NULL){
         cout << "Bienvenido a la aplicacion para gestionar su gimnasio. \nComo es su primer ingreso, es necesario crear una cuenta de administrador: " << endl << endl;
         usuario=registrarAdmin(escribir, usuario);
+        Limpiar();
         fclose(leer);
     } else {
         fclose(leer);
@@ -70,9 +78,10 @@ int main(){
         << "1. Iniciar sesion." << endl
         << "2. Registrar usuario de Recepcion." << endl
         << "3. Registrar actividades del gym." << endl
-        << "4. Entrenador con mayor carga horaria." << endl
-        << "5. Listar usuarios y actividades." << endl 
-        << "6. Salir. " << endl
+        << "4. Calcular el pago al entrenador." << endl
+        << "5. Entrenador con mayor carga horaria." << endl
+        << "6. Listar usuarios y actividades." << endl
+        << "7. Salir. " << endl
         << "-----------------------------------------------" << endl
         << "Ingresar una opcion: ";cin >> respuesta;
         system("CLS");
@@ -95,17 +104,62 @@ int main(){
                 cout << "No hay ninguna sesion de administrador activa." << endl;
             }
             break;
+        case 4:
+            if(usuario.tipo==2){
+                calcularPago(entrenador);
+            } else {
+                cout << "No hay ninguna sesion de administrador activa." << endl;
+            }
+            break;
         case 5:
-            listar(escribir, entrenador, usuario, actividad);
-        break;
+
+            break;
         case 6:
+            if(usuario.tipo==2){
+                listar(escribir, entrenador, usuario, actividad);
+            } else {
+                cout << "No hay ninguna sesion de administrador activa." << endl;
+            }
+        break;
+        case 7:
             break;
         default:
             break;
         }
-    } while (respuesta!=6);
+    } while (respuesta!=7);
     
     return 0;
+}
+
+void calcularPago(entrenadores entrenador){
+    char trainerName[50];
+    FILE *sp;
+    int c=0;
+
+    sp=fopen("Turnos.dat", "rb");
+    if(sp!=NULL){
+        cout << "Nombre del entrenador: ";
+        fflush(stdin);
+        cin.getline(trainerName, 50, '\n');
+
+        fread(&entrenador, sizeof(entrenadores), 1, sp);
+        while(!feof(sp)){
+            if(strcmp(strlwr(trainerName),strlwr(entrenador.apYNom))==0){
+                c++;
+            }
+            fread(&entrenador, sizeof(entrenadores), 1, sp);
+        }
+    } else {
+        cout << "No hay personas realizando actividades." << endl;
+    }
+    fclose(sp);
+
+    if(c!=0){
+        cout << "La paga correspondiente al entrenador " << trainerName << "es $" << c*1500 << "." << endl << endl;
+    } else {
+        cout << "El entrenador no tiene ningun grupo de personas asignado." << endl << endl;
+    }
+    Limpiar();
 }
 
 void registrarActividad(FILE *fp, Actividades actividad){
@@ -188,13 +242,31 @@ bool validTrainer(char entrenador[100], char horario[50]){
 
 bool validHourFormat(char hora[50]){
     if(strlen(hora)>5) return false;
-
-    if (isdigit(int(hora[0])) && 
-        isdigit(int(hora[1])) && 
+    if (isdigit(int(hora[0]))!=0 && 
+        isdigit(int(hora[1]))!=0 && 
         int(hora[2])==58 && 
-        isdigit(int(hora[3])) && 
-        isdigit(int(hora[4]))) return false;
+        isdigit(int(hora[3]))!=0 && 
+        isdigit(int(hora[4]))!=0);
+    else {
+        return false;
+    }
+    
+    if(int(hora[0])==48 || int(hora[0])==49){
+        if(int(hora[1])<48 || int(hora[1])>57){
+            return false;
+        }
+    } else if(int(hora[0])==50){
+        if(int(hora[1])<48 || int(hora[1])>51){
+            return false;
+        }
+    } else {
+        return false;
+    }
 
+    if(int(hora[3])<48 || int(hora[3])>53){
+        return false;
+    }
+    
     return true;
 }
 
@@ -451,7 +523,7 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
         for (int i = 0; i < (sizeof(entrenador.dias) / sizeof(entrenador.dias[0])); i++) {
             if (i < cantDias) {
                 do {
-                    cout << "Ingresar dia" << i + 1 << ": "; fflush(stdin);
+                    cout << "Ingresar dia " << i + 1 << ": "; fflush(stdin);
                     cin.getline(entrenador.dias[i], 10, '\n');
                     if (!validName(entrenador.dias[i])) {
                         cout << "El dia ingresado no es correcto." << endl;
