@@ -598,7 +598,7 @@ void Limpiar() {
  * Retorna verdadero si la contraseña es válida, de lo contrario, retorna falso.
 */
 bool validPass(char contrasenia[32]) {
-    bool valid[2];
+    bool valid[3];
     valid[0] = false;
     valid[1] = false;
     valid[2] = false;
