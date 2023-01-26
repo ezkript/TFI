@@ -235,6 +235,7 @@ void login(FILE* fp, struct entrenadores& entrenador, struct usuarios& usuario, 
             cout << "Sesion iniciada." << endl;
         }
         else {
+            usuario={};
             cout << "Error de autenticacion." << endl;
         }
         Limpiar();
@@ -427,6 +428,7 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
  * Hace una pausa, y luego limpia la consola.
 */
 void Limpiar() {
+    cout << endl << "Presione cualquier tecla para continuar." << endl;
     getch();
     system("CLS");
 }
@@ -471,4 +473,52 @@ usuarios registrarAdmin(FILE* fp, struct usuarios usuario) {
     cout << "Registro exitoso." << endl << endl;
 
     return usuario;
+}
+
+void mayorCarga(entrenadores &entrenador, int &mayor){
+    FILE *fp,
+        *sp;
+    Actividades actividad;
+    entrenadores entrenador2;
+    int c=0;
+    int horasActividades=0;
+    int diasEntrenadores=0;
+    int horasTotales=0;
+
+    sp=fopen("Entrenadores.dat", "rb");
+    fread(&entrenador2, sizeof(entrenadores), 1, sp);
+    while(!feof(sp)){
+        horasTotales=cantHoras(entrenador2.apYNom)*cantDias(entrenador2.dias);
+        if(horasTotales>mayor){
+            mayor=horasTotales;
+            entrenador=entrenador2;
+        }
+        fread(&entrenador2, sizeof(entrenadores), 1, sp);
+    }
+    fclose(sp);
+}
+
+int cantHoras(char nombre[60]){
+    FILE *fp;
+    fp=fopen("Actividades.dat", "rb");
+    Actividades actividad;
+    int c=0;
+    fread(&actividad, sizeof(Actividades), 1, fp);
+    while(!feof(fp)){
+        if(strcmp(nombre, actividad.entrenadorEncargado)==0){
+            c++;
+        }
+        fread(&actividad, sizeof(Actividades), 1, fp);
+    }
+    return c;
+}
+
+int cantDias(Dia cantDias[6]){
+    int c=0;
+    for(int i=0; i<6; i++){
+        if(strcmp(cantDias[i], "-")!=0){
+            c++;
+        }
+    }
+    return c;
 }

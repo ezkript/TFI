@@ -1,8 +1,6 @@
 /*
 TO-DO:
- *Probar funcionalidad: calcular paga a entrenadores.
- *Agregar funcionalidad: Entrenador con mayor carga horaria.
- *Arreglar bug "Error de autenticacion"
+ *Probar funcionalidad: calcular paga a entrenadores. Archivo "Turnos.dat" de Recepcion requerido.
 */
 
 #include <locale.h>
@@ -25,7 +23,8 @@ int main() {
     usuarios usuario{};
     entrenadores entrenador{};
     Actividades actividad{};
-    int respuesta=0;
+    int respuesta=0,
+        mayor=0;
     // //Establece el idioma a espa�ol 
     // setlocale(LC_ALL, "spanish");
     // //Establecer el idioma de la consola al espa�ol
@@ -36,12 +35,7 @@ int main() {
         cout << "Bienvenido a la aplicacion para gestionar su gimnasio. \nComo es su primer ingreso, es necesario crear una cuenta de administrador: " << endl << endl;
         usuario = registrarAdmin(escribir, usuario);
         Limpiar();
-        try {
-            fclose(leer);
-        }
-        catch (int e) {
-            cout << "Ha ocurrido un error" << endl;
-        }
+        fclose(leer);
     } else {
         fclose(leer);
     }
@@ -90,7 +84,13 @@ int main() {
             }
             break;
         case 5:
-
+            if(usuario.tipo==2){
+                mayorCarga(entrenador,mayor);
+                cout << endl << "El entrenador con mayor carga horaria es " << entrenador.apYNom << " con " << mayor << " horas semanales registradas." << endl;
+                Limpiar();
+            } else {
+                cout << "No hay ninguna sesion de administrador activa." << endl;
+            }
             break;
         case 6:
             if (usuario.tipo == 2) {

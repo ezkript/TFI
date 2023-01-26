@@ -6,3 +6,6 @@ void Limpiar();
 usuarios registrarAdmin(FILE* fp, struct usuarios usuario);
 void registrarActividad(FILE* fp, Actividades actividad);
 void calcularPago(entrenadores entrenador);
+void mayorCarga(entrenadores &entrenador, int &mayor);
+int cantDias(Dia cantDias[6]);
+int cantHoras(char nombre[60]);
