@@ -1,12 +1,37 @@
 #include <stdlib.h>
 #include <conio.h>
-#include <iostream>
-using namespace std;
 #include <cctype>
 #include <string.h>
-#include "Functions.h"
+#include <stdio.h>
+#include <iostream>
+using namespace std;
+
 #include "Structures.h"
 #include "validations.h"
+#include "Functions.h"
+
+/**
+ * Nombre: repetition()
+ * @param fp Puntero
+ * @param user Nombre de usuario
+ * @param Usuario
+ * Tipo: Booleana.
+ * Descripcion: Validar que el nombre de usuario ingresado no sea repetido.
+*/
+bool repetition(FILE* fp, char user[100], struct usuarios usuario){
+    fp = fopen("Usuarios.dat", "rb");
+
+    fread(&usuario, sizeof(usuarios), 1, fp);
+    while (!feof(fp)) {
+        if (strcmp(user, usuario.usuario) == 0) {
+            return false;
+        }
+        fread(&usuario, sizeof(usuarios), 1, fp);
+    }
+    fclose(fp);
+
+    return true;
+}
 
 void calcularPago(entrenadores entrenador) {
     char trainerName[50];
@@ -41,8 +66,23 @@ void calcularPago(entrenadores entrenador) {
     Limpiar();
 }
 
+/**
+ * Nombre: Listar()
+ * @param fp Puntero
+ * @param Actividad Estructura de la actividad
+ * Tipo: sin tipo.
+ * Descripcion: Permite registrar las actividades del gimnasio.
+*/
 void registrarActividad(FILE* fp, Actividades actividad) {
+    FILE *sp=fopen("Entrenadores.dat", "rb");
     fp = fopen("Actividades.dat", "ab");
+
+    //Verifica que hayan entrenadores registrados
+    if(sp==NULL){
+        fp=nullptr;
+    }
+    fclose(sp);
+
     if (fp != NULL) {
         cout << "REGISTRAR ACTIVIDADES" << endl
             << "-------------------------------------------" << endl
@@ -67,12 +107,13 @@ void registrarActividad(FILE* fp, Actividades actividad) {
         } while (!validTrainer(actividad.entrenadorEncargado, actividad.Horario));
 
         fwrite(&actividad, sizeof(Actividades), 1, fp);
-        fclose(fp);
         cout << "Actividad registrada correctamente." << endl;
     }
     else {
-        cout << "Ha ocurrido un error." << endl;
+        cout << "No hay ningun entrenador disponible." << endl;
     }
+
+    fclose(fp);
     Limpiar();
 }
 
@@ -280,8 +321,8 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             cout << "Ingresar usuario: ";
             fflush(stdin);
             cin.getline(usuario.usuario, 100, '\n');
-            if (!validUser(usuario.usuario) || !repetition(fp, usuario.usuario, usuario)) {
-                cout << "Usuario invalido." << endl;
+            if (!repetition(fp, usuario.usuario, usuario)) {
+                cout << "El nombre de usuario ya se encuentra en uso." << endl;
             }
         } while (!validUser(usuario.usuario) || !repetition(fp, usuario.usuario, usuario));
 
@@ -291,9 +332,6 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             cout << "Ingresar contrasenia: ";
             fflush(stdin);
             cin.getline(usuario.contrasenia, 32, '\n');
-            if (!validPass(usuario.contrasenia)) {
-                cout << "Contrasenia no valida" << endl;
-            }
         } while (!validPass(usuario.contrasenia));
 
         cout << endl;
@@ -302,9 +340,6 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             cout << "Ingresar nombre completo: ";
             fflush(stdin);
             cin.getline(usuario.apYNom, 60, '\n');
-            if (!validName(usuario.apYNom)) {
-                cout << "Nombre no valido." << endl;
-            }
         } while (!validName(usuario.apYNom));
 
         cout << endl;
@@ -399,29 +434,6 @@ void Limpiar() {
 //Num. del 0 al 9: 48-57
 //Letras mayusculas: 65-90
 //Letras minusculas: 97-122 
-
-/**
- * Nombre: repetition()
- * @param fp Puntero
- * @param user Nombre de usuario
- * @param Usuario
- * Tipo: Booleana.
- * Descripcion: Validar que el nombre de usuario ingresado no sea repetido.
-*/
-bool repetition(FILE* fp, char user[100], struct usuarios usuario) {
-    fp = fopen("Usuarios.dat", "rb");
-
-    fread(&usuario, sizeof(usuarios), 1, fp);
-    while (!feof(fp)) {
-        if (strcmp(user, usuario.usuario) == 0) {
-            return false;
-        }
-        fread(&usuario, sizeof(usuarios), 1, fp);
-    }
-    fclose(fp);
-
-    return true;
-}
 
 usuarios registrarAdmin(FILE* fp, struct usuarios usuario) {
     fp = fopen("Usuarios.dat", "a+b");

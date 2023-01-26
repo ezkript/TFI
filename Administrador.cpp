@@ -2,6 +2,7 @@
 TO-DO:
  *Probar funcionalidad: calcular paga a entrenadores.
  *Agregar funcionalidad: Entrenador con mayor carga horaria.
+ *Arreglar bug "Error de autenticacion"
 */
 
 #include <locale.h>
@@ -10,12 +11,13 @@ TO-DO:
 #include <stdlib.h>
 #include <string.h>
 #include <cctype>
-#include <iostream>
 #include <conio.h>
-#include "Functions.h"
-#include "Structures.h"
-#include "validations.h"
+#include <iostream>
 using namespace std;
+
+#include "Structures.h"
+#include "Functions.h"
+#include "validations.h"
 
 int main() {
     FILE* escribir=nullptr,
