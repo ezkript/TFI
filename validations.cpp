@@ -273,6 +273,20 @@ bool validName(char name[60]) {
     return true;
 }
 
+bool validDayName(char name[60]) {
+    char namelwr[60];
+    strcpy(namelwr, name);
+    strlwr(namelwr);
+    Dia diaSemana[]={"lunes", "martes", "miercoles", "jueves", "viernes", "sabado"};
+
+    for(int i=0; i<6; i++){
+        if(strcmp(diaSemana[i], namelwr)==0){
+            return true;
+        }
+    }
+    
+    return false;
+}
 
 
 

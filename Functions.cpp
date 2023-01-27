@@ -287,7 +287,7 @@ void login(FILE* fp, struct entrenadores& entrenador, struct usuarios& usuario, 
  * Permite el registro de nuevos usuarios(secretarios o administradores) y entrenadores.
 */
 void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usuarios usuario) {
-
+    char auxDay[60];
     int respuesta,
         cantDias,
         c = 0;
@@ -357,23 +357,25 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             cout << "Ingresar nombre: ";
             fflush(stdin);
             cin.getline(entrenador.apYNom, 60, '\n');
-            if (!validName(entrenador.apYNom)) {
-                cout << "El nombre ingresado no es valido." << endl;
-            }
         } while (!validName(entrenador.apYNom));
 
         cout << endl;
 
-        cout << "Cantidad de dias de trabajo: "; cin >> cantDias;
+        do {
+            cout << "Cantidad de dias de trabajo: "; cin >> cantDias;
+            if(cantDias>6){
+                cout << "La cantidad de dias no debe ser mayor a 6." << endl;
+            }
+        } while(cantDias>6);
         for (int i = 0; i < (sizeof(entrenador.dias) / sizeof(entrenador.dias[0])); i++) {
             if (i < cantDias) {
                 do {
                     cout << "Ingresar dia " << i + 1 << ": "; fflush(stdin);
                     cin.getline(entrenador.dias[i], 10, '\n');
-                    if (!validName(entrenador.dias[i])) {
+                    if (!validDayName(entrenador.dias[i])) {
                         cout << "El dia ingresado no es correcto." << endl;
                     }
-                } while (!validName(entrenador.dias[i]));
+                } while (!validDayName(entrenador.dias[i]));
             }
             else {
                 strcpy(entrenador.dias[i], "-");
@@ -386,12 +388,6 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             cout << "Ingresar contrasenia: ";
             fflush(stdin);
             cin.getline(entrenador.contrasenia, 32, '\n');
-            if (!validPass(entrenador.contrasenia)) {
-                cout << "La contrasenia es invalida." << endl;
-            }
-            else {
-                break;
-            }
         } while (!validPass(entrenador.contrasenia));
 
         cout << endl;
@@ -486,14 +482,19 @@ void mayorCarga(entrenadores &entrenador, int &mayor){
     int horasTotales=0;
 
     sp=fopen("Entrenadores.dat", "rb");
-    fread(&entrenador2, sizeof(entrenadores), 1, sp);
-    while(!feof(sp)){
-        horasTotales=cantHoras(entrenador2.apYNom)*cantDias(entrenador2.dias);
-        if(horasTotales>mayor){
-            mayor=horasTotales;
-            entrenador=entrenador2;
-        }
+    if(sp!=NULL){
         fread(&entrenador2, sizeof(entrenadores), 1, sp);
+        while(!feof(sp)){
+            horasTotales=cantHoras(entrenador2.apYNom)*cantDias(entrenador2.dias);
+            if(horasTotales>mayor){
+                mayor=horasTotales;
+                entrenador=entrenador2;
+            }
+            fread(&entrenador2, sizeof(entrenadores), 1, sp);
+        }
+    } else {
+        cout << "No hay entrenadores registrados." << endl;
+        entrenador.legajo=-1;
     }
     fclose(sp);
 }
@@ -503,13 +504,19 @@ int cantHoras(char nombre[60]){
     fp=fopen("Actividades.dat", "rb");
     Actividades actividad;
     int c=0;
-    fread(&actividad, sizeof(Actividades), 1, fp);
-    while(!feof(fp)){
-        if(strcmp(nombre, actividad.entrenadorEncargado)==0){
-            c++;
-        }
+    
+    if(fp!=NULL){
         fread(&actividad, sizeof(Actividades), 1, fp);
+        while(!feof(fp)){
+            if(strcmp(nombre, actividad.entrenadorEncargado)==0){
+                c++;
+            }
+            fread(&actividad, sizeof(Actividades), 1, fp);
+        }
+    } else {
+        cout << "No hay actividades cargadas." << endl;
     }
+
     return c;
 }
 

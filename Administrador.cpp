@@ -86,7 +86,9 @@ int main() {
         case 5:
             if(usuario.tipo==2){
                 mayorCarga(entrenador,mayor);
-                cout << endl << "El entrenador con mayor carga horaria es " << entrenador.apYNom << " con " << mayor << " horas semanales registradas." << endl;
+                if(entrenador.legajo != -1){
+                    cout << endl << "El entrenador con mayor carga horaria es " << entrenador.apYNom << " con " << mayor << " horas semanales registradas." << endl;
+                }
                 Limpiar();
             } else {
                 cout << "No hay ninguna sesion de administrador activa." << endl;
