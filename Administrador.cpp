@@ -11,6 +11,8 @@ TO-DO:
 #include <cctype>
 #include <conio.h>
 #include <iostream>
+#include <exception>
+#include <limits>
 using namespace std;
 
 #include "Structures.h"
@@ -20,16 +22,12 @@ using namespace std;
 int main() {
     FILE* escribir=nullptr,
         * leer=nullptr;
+    bool flag=false;
     usuarios usuario{};
     entrenadores entrenador{};
     Actividades actividad{};
     int respuesta=0,
         mayor=0;
-    // //Establece el idioma a espa�ol 
-    // setlocale(LC_ALL, "spanish");
-    // //Establecer el idioma de la consola al espa�ol
-    // SetConsoleCP(1252);
-    // SetConsoleOutputCP(1252);
     leer = fopen("Usuarios.dat", "rb");
     if (leer == NULL) {
         cout << "Bienvenido a la aplicacion para gestionar su gimnasio. \nComo es su primer ingreso, es necesario crear una cuenta de administrador: " << endl << endl;
@@ -51,10 +49,18 @@ int main() {
             << "5. Entrenador con mayor carga horaria." << endl
             << "6. Listar usuarios y actividades." << endl
             << "7. Salir. " << endl
-            << "-----------------------------------------------" << endl
-            << "Ingresar una opcion: "; cin >> respuesta;
-        system("CLS");
+            << "-----------------------------------------------" << endl;
 
+        cout << "Ingresar una opcion: "; 
+        cin >> respuesta;
+        if(cin.fail()){
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            respuesta=0;
+            flag=true;
+        }
+        
+        system("CLS");
         switch (respuesta) {
         case 1:
             login(escribir, entrenador, usuario, 1);
@@ -66,6 +72,7 @@ int main() {
             else {
                 cout << "No hay ninguna sesion de administrador activa." << endl;
             }
+            Limpiar();
             break;
         case 3:
             if (usuario.tipo == 2) {
@@ -103,8 +110,13 @@ int main() {
             }
             break;
         case 7:
-            break;
+            break; 
         default:
+            (flag)
+                ? cout << "Se debe ingresar un numero." << endl
+                : cout << "La opcion elegida no existe." << endl;
+            flag=false;
+            Limpiar();
             break;
         }
     } while (respuesta != 7);

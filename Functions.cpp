@@ -243,8 +243,12 @@ void login(FILE* fp, struct entrenadores& entrenador, struct usuarios& usuario, 
     case 2:
         fp = fopen("Entrenadores.dat", "rb");
 
-        cout << "Ingresar legajo: ";
-        cin >> legajo;
+        do {
+            cout << "Ingresar legajo: ";
+            cin >> legajo;
+            validIntDataType(legajo, -404);
+        } while(legajo==-404);
+
         cout << "Ingresar contrasenia: ";
         fflush(stdin);
         cin.getline(contrasenia, 32, '\n');
@@ -288,7 +292,7 @@ void login(FILE* fp, struct entrenadores& entrenador, struct usuarios& usuario, 
 */
 void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usuarios usuario) {
     char auxDay[60];
-    int respuesta,
+    int respuesta2,
         cantDias,
         c = 0;
     struct entrenadores entrenador2;
@@ -298,11 +302,13 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
         << "1. USUARIO" << endl
         << "2. ENTRENADOR" << endl
         << "-------------------" << endl
-        << "Respuesta: "; cin >> respuesta;
-
+        << "Respuesta: ";
+    
+    cin >> respuesta2;
+    validIntDataType(respuesta2, 0);
     cout << endl;
 
-    switch (respuesta)
+    switch (respuesta2)
     {
     case 1:
         fp = fopen("Usuarios.dat", "a+b");
@@ -310,7 +316,9 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             << "1. Secretario." << endl
             << "2. Administrador." << endl;
         do {
-            cout << "Respuesta: "; cin >> usuario.tipo;
+            cout << "Respuesta: ";
+            cin >> usuario.tipo;
+            validIntDataType(usuario.tipo, 5);
             if (usuario.tipo != 1 && usuario.tipo != 2) {
                 cout << "El tipo de usuario no existe." << endl;
             }
@@ -348,7 +356,6 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
         fwrite(&usuario, sizeof(usuarios), 1, fp);
         fclose(fp);
         cout << "Registro exitoso." << endl << endl;
-        Limpiar();
         break;
     case 2:
         fp = fopen("Entrenadores.dat", "a+b");
@@ -362,7 +369,9 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
         cout << endl;
 
         do {
-            cout << "Cantidad de dias de trabajo: "; cin >> cantDias;
+            cout << "Cantidad de dias de trabajo: "; 
+            cin >> cantDias;
+            validIntDataType(cantDias, 10);
             if(cantDias>6){
                 cout << "La cantidad de dias no debe ser mayor a 6." << endl;
             }
@@ -409,7 +418,6 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
         cout << "Legajo asignado: " << entrenador.legajo << endl;
         fwrite(&entrenador, sizeof(entrenadores), 1, fp);
         fclose(fp);
-        Limpiar();
         break;
     default:
         cout << "La opcion no existe." << endl;

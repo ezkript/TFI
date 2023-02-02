@@ -4,3 +4,4 @@ bool validName(char name[60]);
 bool validDayName(char name[60]);
 bool validPass(char contrasenia[32]);
 bool validHourFormat(char hora[50]);
+void validIntDataType(int &intVar, int numberToReplace);

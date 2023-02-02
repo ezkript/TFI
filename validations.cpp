@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <limits>
 #include <cctype>
 #include <iostream>
 using namespace std;
@@ -288,6 +289,10 @@ bool validDayName(char name[60]) {
     return false;
 }
 
-
-
-
+void validIntDataType(int &intVar, int numberToReplace){
+    if(cin.fail()){
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        intVar=numberToReplace;
+    }
+}
