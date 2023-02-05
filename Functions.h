@@ -5,7 +5,7 @@ void listar(FILE* fp, struct entrenadores entrenador, struct usuarios usuario, s
 void Limpiar();
 usuarios registrarAdmin(FILE* fp, struct usuarios usuario);
 void registrarActividad(FILE* fp, Actividades actividad);
-void calcularPago(entrenadores entrenador);
+void calcularPago(Actividades actividad);
 void mayorCarga(entrenadores &entrenador, int &mayor);
-int cantDias(Dia cantDias[6]);
+ int cantDias(Dia cantDias[6]);
 int cantHoras(char nombre[60]);

@@ -1,8 +1,3 @@
-/*
-TO-DO:
- *Probar funcionalidad: calcular paga a entrenadores. Archivo "Turnos.dat" de Recepcion requerido.
-*/
-
 #include <locale.h>
 #include <windows.h>
 #include <iostream>
@@ -84,7 +79,7 @@ int main() {
             break;
         case 4:
             if (usuario.tipo == 2) {
-                calcularPago(entrenador);
+                calcularPago(actividad);
             }
             else {
                 cout << "No hay ninguna sesion de administrador activa." << endl;

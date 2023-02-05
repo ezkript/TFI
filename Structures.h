@@ -16,6 +16,12 @@ struct usuarios {
 struct entrenadores {
     char apYNom[60];
     int legajo;
+    int tipo;
     char contrasenia[32];
     Dia dias[6];
 };
+struct registraractividad{
+ 	char act[100];
+ 	char nombresocio[60];
+    char nombreEntrenador[100];
+ };

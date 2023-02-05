@@ -33,23 +33,23 @@ bool repetition(FILE* fp, char user[100], struct usuarios usuario){
     return true;
 }
 
-void calcularPago(entrenadores entrenador) {
-    char trainerName[50];
+void calcularPago(Actividades actividad) {
+    char trainerName[60];
     FILE* sp;
     int c = 0;
 
-    sp = fopen("Turnos.dat", "rb");
+    sp = fopen("Actividades.dat", "rb");
     if (sp != NULL) {
         cout << "Nombre del entrenador: ";
         fflush(stdin);
-        cin.getline(trainerName, 50, '\n');
+        cin.getline(trainerName, 60, '\n');
 
-        fread(&entrenador, sizeof(entrenadores), 1, sp);
+        fread(&actividad, sizeof(Actividades), 1, sp);
         while (!feof(sp)) {
-            if (strcmp(strlwr(trainerName), strlwr(entrenador.apYNom)) == 0) {
+            if (strcmp(strlwr(trainerName), strlwr(actividad.entrenadorEncargado)) == 0) {
                 c++;
             }
-            fread(&entrenador, sizeof(entrenadores), 1, sp);
+            fread(&actividad, sizeof(Actividades), 1, sp);
         }
     }
     else {
@@ -61,7 +61,7 @@ void calcularPago(entrenadores entrenador) {
         cout << "La paga correspondiente al entrenador " << trainerName << "es $" << c * 1500 << "." << endl << endl;
     }
     else {
-        cout << "El entrenador no tiene ningun grupo de personas asignado." << endl << endl;
+        cout << "El entrenador no tiene ninguna actividad asignada." << endl << endl;
     }
     Limpiar();
 }
@@ -154,6 +154,7 @@ void listar(FILE* fp, struct entrenadores entrenador, struct usuarios usuario, s
         while (!feof(fp)) {
             cout << "Apellido y nombre:" << entrenador.apYNom << endl
                 << "Legajo: " << entrenador.legajo << endl
+                << "Tipo: " << entrenador.tipo << endl
                 << "Contrasenia: " << entrenador.contrasenia << endl;
             cout << "Dias de atencion: ";
             for (int i = 0; i < (sizeof(entrenador.dias) / sizeof(entrenador.dias[0])); i++) {
@@ -307,7 +308,7 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
     cin >> respuesta2;
     validIntDataType(respuesta2, 0);
     cout << endl;
-
+    system("CLS");
     switch (respuesta2)
     {
     case 1:
@@ -323,27 +324,37 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
                 cout << "El tipo de usuario no existe." << endl;
             }
         } while (usuario.tipo != 1 && usuario.tipo != 2);
-
-        cout << endl;
-
+        system("CLS");
         do {
+            cout << "\tEl nombre de usuario debe cumplir los siguientes requisitos:" << endl
+            << "-> Debe tener entre 6 y 10 caracteres." << endl 
+            << "-> Debe comenzar con minuscula." << endl
+            << "-> Debe tener al menos 2 mayusculas." << endl
+            << "-> Puede estar conformado por numeros, letras o los siguientes caracteres: +, -, /,*,?,¿,!,¡" << endl
+            << "-> Puede contener un maximo de 3 digitos." << endl << endl;
             cout << "Ingresar usuario: ";
             fflush(stdin);
             cin.getline(usuario.usuario, 100, '\n');
             if (!repetition(fp, usuario.usuario, usuario)) {
                 cout << "El nombre de usuario ya se encuentra en uso." << endl;
+                Limpiar();
             }
         } while (!validUser(usuario.usuario) || !repetition(fp, usuario.usuario, usuario));
 
-        cout << endl;
-
+        system("CLS");
         do {
+            cout << "\tLa contrasenia debe cumplir con los siguientes requisitos: " << endl
+            << "-> Debe contener al menos una letra mayuscula, una letra minuscula y un numero." << endl
+            << "-> Debe estar conformada unicamente por caracteres alfanumericos." << endl
+            << "-> Debe tener entre 6 y 32 caracteres." << endl
+            << "-> No debe tener mas de 3 caracteres numericos consecutivos." << endl
+            << "-> No debe contener 2 caracteres consecutivos que refieran a 2 letras alfabeticamente consecutivas ascendentemente." << endl << endl;
             cout << "Ingresar contrasenia: ";
             fflush(stdin);
             cin.getline(usuario.contrasenia, 32, '\n');
         } while (!validPass(usuario.contrasenia));
 
-        cout << endl;
+        system("CLS");
 
         do {
             cout << "Ingresar nombre completo: ";
@@ -351,7 +362,7 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             cin.getline(usuario.apYNom, 60, '\n');
         } while (!validName(usuario.apYNom));
 
-        cout << endl;
+        system("CLS");
 
         fwrite(&usuario, sizeof(usuarios), 1, fp);
         fclose(fp);
@@ -359,14 +370,15 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
         break;
     case 2:
         fp = fopen("Entrenadores.dat", "a+b");
-        cout << "Registrar Entrenador" << endl;
         do {
+            system("CLS");
+            cout << "Registrar Entrenador" << endl;
             cout << "Ingresar nombre: ";
             fflush(stdin);
             cin.getline(entrenador.apYNom, 60, '\n');
         } while (!validName(entrenador.apYNom));
 
-        cout << endl;
+        system("CLS");
 
         do {
             cout << "Cantidad de dias de trabajo: "; 
@@ -374,6 +386,7 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             validIntDataType(cantDias, 10);
             if(cantDias>6){
                 cout << "La cantidad de dias no debe ser mayor a 6." << endl;
+                Limpiar();
             }
         } while(cantDias>6);
         for (int i = 0; i < (sizeof(entrenador.dias) / sizeof(entrenador.dias[0])); i++) {
@@ -391,14 +404,22 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             }
         }
 
-        cout << endl;
+        system("CLS");
 
         do {
+            cout << "\tLa contrasenia debe cumplir con los siguientes requisitos: " << endl
+            << "-> Debe contener al menos una letra mayuscula, una letra minuscula y un numero." << endl
+            << "-> Debe estar conformada unicamente por caracteres alfanumericos." << endl
+            << "-> Debe tener entre 6 y 32 caracteres." << endl
+            << "-> No debe tener mas de 3 caracteres numericos consecutivos." << endl
+            << "-> No debe contener 2 caracteres consecutivos que refieran a 2 letras alfabeticamente consecutivas ascendentemente." << endl << endl;
             cout << "Ingresar contrasenia: ";
             fflush(stdin);
             cin.getline(entrenador.contrasenia, 32, '\n');
         } while (!validPass(entrenador.contrasenia));
-
+        
+        entrenador.tipo=3;
+        
         cout << endl;
         leer = fopen("Entrenadores.dat", "rb");
         fread(&entrenador2, sizeof(entrenadores), 1, leer);
@@ -413,7 +434,7 @@ void registrar(FILE* fp, FILE* leer, struct entrenadores entrenador, struct usua
             entrenador.legajo = 1;
         }
         fclose(leer);
-
+        
         cout << "Registro exitoso." << endl;
         cout << "Legajo asignado: " << entrenador.legajo << endl;
         fwrite(&entrenador, sizeof(entrenadores), 1, fp);

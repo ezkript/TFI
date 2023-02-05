@@ -7,6 +7,7 @@ using namespace std;
 
 #include "Structures.h"
 #include "validations.h"
+#include "Functions.h"
 
 /**
  * Nombre: validTrainer()
@@ -116,6 +117,7 @@ bool validPass(char contrasenia[32]) {
     //Valida que la contrasenia tenga entre 6 y 32 caracteres.
     if (strlen(contrasenia) < 6 || strlen(contrasenia) > 32){
         cout << "La contrasenia debe tener entre 6 y 32 caracteres." << endl;
+        Limpiar();
         return false;
     }
 
@@ -147,6 +149,7 @@ bool validPass(char contrasenia[32]) {
         << "->1 numero." << endl
         << "->1 letra mayuscula." << endl 
         << "->1 letra minuscula." << endl;
+        Limpiar();
         return false;
     }
 
@@ -156,6 +159,7 @@ bool validPass(char contrasenia[32]) {
             c++;
             if (c > 3) {
                 cout << "La contrasenia solo puede contener hasta 3 caracteres numericos consecutivos" << endl;
+                Limpiar();
                 return false;
             }
         }
@@ -169,6 +173,7 @@ bool validPass(char contrasenia[32]) {
         if (!((int(contrasenia[i]) >= 48 && int(contrasenia[i]) <= 57) ||
             isalpha(contrasenia[i]) != 0)){
                 cout << "La contrasenia no puede contener caracteres especiales ni espacios." << endl;
+                Limpiar();
                 return false;
             }
     }
@@ -182,11 +187,11 @@ bool validPass(char contrasenia[32]) {
         if (isalpha(contrasenia2[i]) != 0) {
             if ((int(contrasenia2[i + 1]) - 1) == int(contrasenia2[i])) {
                 cout << "La contrasenia no puede contener 2 letras alfabeticamente consecutivas." << endl;
+                Limpiar();
                 return false;
             }
         }
     }
-
     return true;
 }
 
@@ -201,12 +206,14 @@ bool validUser(char user[100]) {
     //Valida que la primera letra del usuario sea min�scula.
     if (!(int(user[0]) >= 97 && int(user[0]) <= 122)){
         cout << "La contrasenia debe comenzar en minuscula." << endl;
+        Limpiar();
         return false;
     }
     
     //Valida que el nombre de usuario tenga entre 6 y 10 caracteres.
     if (strlen(user) < 6 || strlen(user) > 10){
         cout << "El nombre de usuario debe tener entre 6 y 10 caracteres." << endl;
+        Limpiar();
         return false;
     }
     
@@ -218,6 +225,7 @@ bool validUser(char user[100]) {
 
         if (c == 4) {
             cout << "El nombre de usuario no debe contener mas de 3 numeros." << endl;
+            Limpiar();
             return false;
         }
     }
@@ -235,7 +243,8 @@ bool validUser(char user[100]) {
             !(int(user[i]) == 43 || int(user[i]) == 45 || int(user[i]) == 47 || int(user[i]) == 42 || int(user[i]) == 63 || int(user[i]) == 168 || int(user[i]) == 173 || int(user[i]) == 33)){
                 cout << "El nombre de usuario solo puede estar conformado por:" << endl
                 << "-> Caracteres alfanumericos." << endl
-                << "-> Los siguientes caracteres especiales: + - / * ? ¿ ! ¡" << endl;   
+                << "-> Los siguientes caracteres especiales: + - / * ? ¿ ! ¡" << endl;
+                Limpiar();
                 return false;
             }
     }
@@ -248,6 +257,7 @@ bool validUser(char user[100]) {
 
         if (i == strlen(user) - 1 && c < 2) {
             cout << "El nombre de usuario debe contener al menos 2 letras mayusculas." << endl;
+            Limpiar();
             return false;
         }
     }
