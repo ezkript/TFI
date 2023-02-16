@@ -6,14 +6,34 @@
 #include <cctype>
 using namespace std;
 
-#include "Structures.h"
-#include "validations.h"
+typedef char Dia[10];
 
-// struct registraractividad{
-//  	char act[100];
-//  	char nombresocio[60];
-//     char nombreEntrenador[100];
-//  };
+struct Actividades {
+    char NombreAct[100];
+    char Horario[50];
+    char entrenadorEncargado[100];
+};
+
+struct usuarios {
+    char usuario[100];
+    char contrasenia[32];
+    char apYNom[60];
+    int tipo;
+};
+
+struct entrenadores {
+    char apYNom[60];
+    int legajo;
+    int tipo;
+    char contrasenia[32];
+    Dia dias[6];
+};
+
+struct registraractividad{
+ 	char act[100];
+ 	char nombresocio[60];
+    char nombreEntrenador[100];
+ };
 
  struct registroRutina{
     char rutina[500];
@@ -22,6 +42,7 @@ using namespace std;
     char Entrenador[100];
  };
 
+void validIntDataType(int &intVar, int numberToReplace);
 void listarTurnos(FILE *fp);
 int menu(entrenadores entrenador);
 void login(FILE* fp, struct entrenadores& entrenador, struct usuarios& usuario, int respuesta);
@@ -84,15 +105,15 @@ int main(){
 
 int menu(entrenadores entrenador){
     int respuesta;
-    cout << "\tMODULO GYM - Sesion: " << (strlen(entrenador.apYNom) < 1 ? "invitado" : entrenador.apYNom) << "." << endl
+    cout << "\tBienvenid@ " << (strlen(entrenador.apYNom) < 1 ? "invitado" : entrenador.apYNom) << "." << endl
     << "----------------------------------" << endl
-    << "1. Inicio de sesion." << endl
-    << "2. Listado de socios y actividad que desarrollan." << endl
-    << "3. Registro de rutinas de gimnasia." << endl
-    << "4. Ver rutinas registradas." << endl
-    << "5. Salir." << endl
+    << (strlen(entrenador.apYNom) < 1 ? " 1. Iniciar sesion.":" 1. Cambiar de cuenta.") << endl
+    << " 2. Listado de socios y actividad que desarrollan." << endl
+    << " 3. Registro de rutinas de gimnasia." << endl
+    << " 4. Ver rutinas registradas." << endl
+    << " 5. Salir." << endl
     << "-----------------------------------" << endl
-    << "Respuesta: ";
+    << " Respuesta: ";
     cin >> respuesta;
     if(cin.fail()){
         cin.clear();
@@ -285,4 +306,12 @@ void verRutina(FILE *fp, entrenadores entrenador){
         cout << "No hay rutinas registradas." << endl;
     }
     fclose(fp);
+}
+
+void validIntDataType(int &intVar, int numberToReplace){
+    if(cin.fail()){
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        intVar=numberToReplace;
+    }
 }

@@ -1,9 +1,10 @@
-#include<iostream>
-#include<stdlib.h>
-#include<stdio.h>
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
 #include <time.h>  
 #include <string.h>
-#include<conio.h>
+#include <conio.h>
+#include <limits>
 
  using namespace std;
  
@@ -17,16 +18,12 @@
  	int mes;
  	int anio;
  };
- struct fecha{
- 	int dia;
- 	int mes;
- 	int anio;
- };
+ 
  struct socios{
  	char apnom [60];
  	char dom[60];
  	int dni;
- 	fecha fechas;
+ 	fechapago fechas;
  	float altura;
  	float peso;
  	int numsocio;
@@ -64,17 +61,21 @@ struct Actividades {
  void listado(FILE *arch, socios soc);
  void fechadepago(FILE *arch, fechapago pago, socios soc);
  int maximo(socios soc);
- void login(FILE* fp, struct usuarios& usuario);
- void listar(FILE* arch,FILE*Socios, struct Actividades actividad,registraractividad regis);
+ void login(FILE* fp, usuarios& usuario);
+ void listar(FILE* arch,FILE*Socios, Actividades actividad,registraractividad regis);
  void mostrar(FILE *Socios, registraractividad regis);
-bool canDo(char Actividad[100], indmed indicaciones[10]);
+ bool canDo(char Actividad[100], indmed indicaciones[10]);
+ bool validName(char name[60]);
+ bool validDate(fechapago fecha);
+ bool validIntDataType(int &value, int replace);
+ bool validFloatDataType(float &value, float replace);
 
  main(){
- 	FILE *arch;
+ 	FILE *arch=nullptr;
  	FILE *Socios;
  	arch= fopen("Socios.dat","a+b");
  	int respuesta;
- 	fecha fechas;
+ 	fechapago fechas;
 	usuarios usuario;
  	socios soc;
  	fechapago pago;
@@ -84,16 +85,20 @@ bool canDo(char Actividad[100], indmed indicaciones[10]);
  
  	
  	do{
- 	cout<<endl;
- 			cout<<"Bienvenido a Recepcion"<<endl
- 	<<"1. Iniciar Sesion."<<endl
- 	<<"2. Registrar socios."<<endl
- 	<<"3. Registrar actividades de socios. "<<endl
- 	<<"4. Listado de socios."<<endl
- 	<<"5. Listado de fechas de pagos."<<endl
- 	<<"6. Cerrar la aplicacion."<<endl<<endl
- 	<<"ingresar opcion: "; cin>>respuesta;
- 	cout<<endl;
+		cout<<endl;
+		cout<<"\tBienvenid@ "<< (strlen(usuario.apYNom) < 1 ? "invitado" : usuario.apYNom) <<endl
+		<< "----------------------------------" << endl
+		<<(strlen(usuario.apYNom) < 1 ? " 1. Iniciar sesion.":" 1. Cambiar de cuenta.")<<endl
+		<<" 2. Registrar socios."<<endl
+		<<" 3. Registrar actividades de socios. "<<endl
+		<<" 4. Listado de socios."<<endl
+		<<" 5. Listado de fechas de pagos."<<endl
+		<<" 6. Cerrar la aplicacion."<<endl
+		<< "----------------------------------" << endl
+		<<" Ingresar opcion: "; 
+		cin>>respuesta;
+		validIntDataType(respuesta, 0);
+		cout<<endl;
  	
  		switch(respuesta)
  		{
@@ -126,6 +131,8 @@ bool canDo(char Actividad[100], indmed indicaciones[10]);
  			case 4:
  				if(usuario.tipo==1 || usuario.tipo==2){
  					listado(arch, soc);
+ 					system("PAUSE");
+ 					system("CLS");
  				}
  				else{
  					cout<<"No hay ninguna sesion activa. "<<endl;
@@ -143,8 +150,12 @@ bool canDo(char Actividad[100], indmed indicaciones[10]);
 					system("CLS");
 				}
 				 break; 
- 			
+ 			case 6:
+				break;
  			default: 
+ 				cout << "La opcion no existe." << endl;
+ 				system("PAUSE");
+ 				system("CLS");
 			    break;	
  			
  		}
@@ -161,61 +172,75 @@ bool canDo(char Actividad[100], indmed indicaciones[10]);
  	int c=0;
  	int cont=0;
  	int respuesta;
- 	fflush(stdin); 
- 	cout<<"ingrese apellido y nombre: ";cin.getline(soc.apnom,60,'\n');
- 	fflush(stdin); 
- 	cout<<"ingrese el domicilio: ";cin.getline(soc.dom,60,'\n');
- 	cout<<"ingrese dni: "; cin>>soc.dni;
- 	cout<<"ingrese fecha de nacimiento: "<<endl;
- 	cout<<"dia: "; cin>>soc.fechas.dia;
  	
-	 while(soc.fechas.dia>31 || soc.fechas.dia<1){
-	 
-	 cout<< "fecha incorrecta, vuelva a ingresar el dia: "; cin>>soc.fechas.dia;
-	 
-}
-	
- 	cout<<"mes: ";cin>>soc.fechas.mes;
- 	
- 	while(soc.fechas.mes>12 || soc.fechas.mes<1){
-	 
-	 cout<< "fecha incorrecta, vuelva a ingresar el mes: "; cin>>soc.fechas.mes;
-}
-
- 		if(soc.fechas.mes== 1,3,5,7,8,10,12){
- 			 while(soc.fechas.dia>31 || soc.fechas.dia<1)
-			 {
-	 
-	     	cout<< "fecha incorrecta, vuelva a ingresar el dia: "; cin>>soc.fechas.dia;
-		
-			}
- 		}
- 		else{
- 			while((soc.fechas.mes==2 && soc.fechas.dia==30) || soc.fechas.dia>30 || soc.fechas.dia<1)
-			 {
-	 
-	     	cout<< "fecha incorrecta, vuelva a ingresar el dia: "; cin>>soc.fechas.dia;
-	     		
-			}		
- 		}
-
-
-	cout<<"anio: " ; cin>>soc.fechas.anio;
-	cout<<"ingrese la altura: ";cin>>soc.altura;
-	cout<<"peso: "; cin>>soc.peso;
-	cout<<"ingrese fecha de inicio: "<<endl;
-	cout<<"dia: "; cin>>soc.pago.dia;
-	
-		 while(soc.pago.dia>31 || soc.pago.dia<1){
-	 		cout<< "fecha incorrecta, vuelva a ingresar el dia: "; cin>>soc.pago.dia;	 
+ 	do {
+ 		fflush(stdin); 
+ 		cout<<"ingrese apellido y nombre: ";
+		cin.getline(soc.apnom,60,'\n');
+ 		
+ 		if(!validName(soc.apnom)){
+ 			cout << "El nombre ingresado no es valido." << endl;
 		}
-	cout<<"mes: ";cin>>soc.pago.mes;
-	 	 while(soc.pago.mes>12 || soc.pago.mes<1){
-	        cout<< "fecha incorrecta, vuelva a ingresar el mes: "; cin>>soc.pago.mes;
-}
+ 		
+	} while(!validName(soc.apnom));
 	
-	cout<<"anio: " ; 
-	cin>>soc.pago.anio;
+	fflush(stdin); 
+ 	cout<<"ingrese el domicilio: ";cin.getline(soc.dom,60,'\n');
+ 	do {
+ 		cout<<"ingrese dni: "; 
+		cin>>soc.dni;	
+		if(cin.fail()){
+        	cin.clear();
+        	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        	soc.dni=-1;
+        	cout << "El DNI ingresado es incorrecto." << endl;
+    	}
+	} while(soc.dni==-1);
+ 	
+	cout<<"Ingrese fecha de nacimiento: "<<endl;
+	
+ 	do {
+ 		cout<<"Dia: "; cin>>soc.fechas.dia;
+ 		validIntDataType(soc.fechas.dia, -1);
+ 		cout<<"Mes: ";cin>>soc.fechas.mes;
+ 		validIntDataType(soc.fechas.mes, -1);
+		cout<<"Anio: " ; cin>>soc.fechas.anio;
+		validIntDataType(soc.fechas.anio, 1800);
+		if(!validDate(soc.fechas)){
+			cout << "Fecha invalida." << endl;
+		}	
+	}while(!validDate(soc.fechas));
+	
+	do {
+		cout<<"Ingrese la altura: ";
+		cin>>soc.altura;
+		if(!validFloatDataType(soc.altura,0)){
+			cout << "La altura es invalida." << endl;
+		}
+	} while(!validFloatDataType(soc.altura, 0));
+	
+	do {
+		cout<<"Peso: "; 
+		cin>>soc.peso;
+		if(!validFloatDataType(soc.peso,0)){
+			cout << "El peso es invalido." << endl;
+		}	
+	} while(!validFloatDataType(soc.peso, 0));
+	
+	
+	cout<<"ingrese fecha de inicio: "<<endl;
+	do {
+		cout<<"dia: "; cin>>soc.pago.dia;
+		validIntDataType(soc.pago.dia, -1);
+		cout<<"mes: "; cin>>soc.pago.mes;
+		validIntDataType(soc.pago.mes, -1);
+		cout<<"anio: " ; cin>>soc.pago.anio;
+		validIntDataType(soc.pago.anio, 1800);
+		if(!validDate(soc.pago)){
+			cout << "Fecha invalida." << endl;
+		}	
+	} while(!validDate(soc.pago));
+	
 	cout<<"Especificaciones medicas(maximo permitido: 5)\nEn caso de no tener especificaciones dejar en blanco." << endl;
 	do{
 		cout << "Actividad no permitida: "; 
@@ -258,30 +283,33 @@ bool canDo(char Actividad[100], indmed indicaciones[10]);
 	
  	arch= fopen("Socios.dat","a+b");
  	fread(&soc, sizeof(socios),1,arch);
+ 	cout << "\tListado de socios" << endl 
+ 	<< "-------------------------------------------" << endl;
  	while (!feof(arch)){
-        cout<<"nombre: ";
+        cout<<"Nombre: ";
         puts(soc.apnom);
-        cout<<"domicilio: ";
+        cout<<"Nomicilio: ";
         puts(soc.dom);
         cout<<"DNI: "<<soc.dni<<endl;
         cout<<"Fecha de nacimiento: " << soc.fechas.dia<<"/"<<soc.fechas.mes<<"/"<<soc.fechas.anio<<endl;
         cout<<"Altura: " << soc.altura<<endl;
-        cout<<"peso: "<<soc.peso<<endl;
-        cout<<"numero de socio: "<<soc.numsocio<<endl;
-		cout<<"ind medicas: ";
+        cout<<"Peso: "<<soc.peso<<endl;
+        cout<<"Numero de socio: "<<soc.numsocio<<endl;
+		cout<<"Ind. medicas: ";
         for(int i=0; i<10; i++){
 			if(strcmp(soc.indicaciones[i], ".")!=0){
 				cout << soc.indicaciones[i] << ", ";
 			}
 		}
 		cout << endl;
-        cout<<"edad: " <<2023-soc.fechas.anio<<endl;
-        cout<<"altura: "<<soc.altura<<endl;
-        cout<<"telefono: " <<soc.tel<<endl;
-        cout<<"fecha de inicio: "<<soc.pago.dia<<" / "<<soc.pago.mes<<" / "<<soc.pago.anio<<endl <<endl;
+        cout<<"Edad: " <<2023-soc.fechas.anio<<endl;
+        cout<<"Altura: "<<soc.altura<<endl;
+        cout<<"Telefono: " <<soc.tel<<endl;
+        cout<<"Fecha de inicio: "<<soc.pago.dia<<" / "<<soc.pago.mes<<" / "<<soc.pago.anio<<endl <<endl;
         fread(&soc,sizeof(socios),1,arch);
     }
     fclose(arch);
+    cout << "-------------------------------------------" << endl;
  }
  
  void fechadepago(FILE *arch, fechapago pago, socios soc){
@@ -372,7 +400,6 @@ void login(FILE* fp, struct usuarios& usuario) {
 			cout << "Sesion iniciada." << endl;
 		}
 		else {
-			usuario={};
 			cout << "Error de autenticacion." << endl;
 		}
 	} else {
@@ -469,5 +496,51 @@ bool canDo(char Actividad[100], indmed indicaciones[10]){
 	return true;
 }
 	
+bool validName(char name[60]) {
 
+    //Permite �nicamente el ingreso de caracteres alfab�ticos.
+    for (int i = 0; i < strlen(name); i++) {
+        if (isalpha(name[i]) == 0 && int(name[i]) != 32) {
+            cout << "El nombre solo puede contener letras." << endl;
+            return false;
+        }
+    }
 
+    return true;
+}
+
+bool validDate(fechapago fecha){
+	int valor[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+	if(fecha.mes>12 || fecha.mes<1){
+		return false;
+	}
+	if(fecha.anio<1900){
+		return false;
+	}
+	for(int i=0; i<12; i++){
+		if(valor[fecha.mes-1]<fecha.dia || fecha.dia <1){
+			return false;
+		}
+	}
+	return true;
+}
+
+bool validIntDataType(int &value, int replace){
+	if(cin.fail()){
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        value=replace;
+        return false;
+    }
+    return true;
+}
+
+bool validFloatDataType(float &value, float replace){
+	if(cin.fail()){
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        value=replace;
+        return false;
+    }
+    return true;
+}
